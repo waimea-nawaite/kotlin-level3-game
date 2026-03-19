@@ -130,6 +130,10 @@ class MainWindow(val app: App) {
     }
 }
 
+class location {
+    
+}
+
 
 /**
  * Info UI window is a child dialog and shows how the
