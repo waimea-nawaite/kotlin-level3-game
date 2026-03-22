@@ -9,10 +9,21 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
 
-    val app = App()                 // Get an app state object
-    val window = MainWindow(app)    // Spawn the UI, passing in the app state
+    val game = Game()                 // Get an app state object
+    val window = MainWindow(game)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
+}
+
+
+class Location(
+    val name: String,
+    val description: String,
+    val distance: Int
+) {
+    var visited: Boolean = false
+
+
 }
 
 
@@ -22,9 +33,46 @@ fun main() {
  * @property name the user's name
  * @property score the points earned
  */
-class App {
-    var name = "Test"
+class Game {
+    var name = "SubPod"
     var score = 0
+
+    val lifepods = mutableListOf<Location>()
+
+    init {
+        val lifepod3 = Location("Lifepod 3", "Safe, shallow, in the Kelp Forest", 250)
+
+        val lifepod17 = Location("Lifepod 17", "Open Grassy Plateaus, good visibility", 350)
+
+        val lifepod6 = Location("Lifepod 6", "Grassy Plateaus, slightly deeper and more open", 450)
+
+        val lifepod13 = Location("Lifepod 13", "Mushroom Forest, unique and visually distinct", 650)
+
+        val lifepod7 = Location("Lifepod 7", "Crag Field, rugged terrain with more tension", 750)
+
+        val lifepod19 = Location("Lifepod 19", "Sparse Reef, darker and more isolated", 850)
+
+        val lifepod12 = Location("Lifepod 12", "Bulb Zone, alien environment", 950)
+
+        val lifepod2 = Location("Lifepod 2", "Blood Kelp Zone, furthest and very dangerous", 1200)
+
+        lifepods.add(lifepod3)
+
+        lifepods.add(lifepod17)
+
+        lifepods.add(lifepod6)
+
+        lifepods.add(lifepod13)
+
+        lifepods.add(lifepod7)
+
+        lifepods.add(lifepod19)
+
+        lifepods.add(lifepod12)
+
+        lifepods.add(lifepod2)
+
+    }
 
     fun scorePoints(points: Int) {
         score += points
@@ -43,9 +91,9 @@ class App {
 /**
  * Main UI window, handles user clicks, etc.
  *
- * @param app the app state object
+ * @param game the app state object
  */
-class MainWindow(val app: App) {
+class MainWindow(val game: Game) {
     val frame = JFrame("WINDOW TITLE")
     private val panel = JPanel().apply { layout = null }
 
@@ -55,7 +103,7 @@ class MainWindow(val app: App) {
     private val clickButton = JButton("Click Me!")
     private val infoButton = JButton("Info")
 
-    private val infoWindow = InfoWindow(this, app)      // Pass app state to dialog too
+    private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
 
     init {
         setupLayout()
@@ -103,7 +151,7 @@ class MainWindow(val app: App) {
     }
 
     private fun handleMainClick() {
-        app.scorePoints(1000)       // Update the app state
+        game.scorePoints(1000)       // Update the app state
         updateUI()                  // Update this window UI to reflect this
     }
 
@@ -112,9 +160,9 @@ class MainWindow(val app: App) {
     }
 
     fun updateUI() {
-        infoLabel.text = "User ${app.name} has ${app.score} points"
+        infoLabel.text = "User ${game.name} has ${game.score} points"
 
-        if (app.maxScoreReached()) {
+        if (game.maxScoreReached()) {
             clickButton.text = "No More!"
             clickButton.isEnabled = false
         } else {
@@ -130,10 +178,6 @@ class MainWindow(val app: App) {
     }
 }
 
-class location {
-    
-}
-
 
 /**
  * Info UI window is a child dialog and shows how the
@@ -142,7 +186,7 @@ class location {
  * @param owner the parent frame, used to position and layer the dialog correctly
  * @param app the app state object
  */
-class InfoWindow(val owner: MainWindow, val app: App) {
+class InfoWindow(val owner: MainWindow, val game: Game) {
     private val dialog = JDialog(owner.frame, "DIALOG TITLE", false)
     private val panel = JPanel().apply { layout = null }
 
@@ -184,15 +228,15 @@ class InfoWindow(val owner: MainWindow, val app: App) {
     }
 
     private fun handleResetClick() {
-        app.resetScore()    // Update the app state
+        game.resetScore()    // Update the app state
         owner.updateUI()    // Update the UI to reflect this, via the main window
     }
 
     fun updateUI() {
         // Use app properties to display state
-        infoLabel.text = "<html>User: ${app.name}<br>Score: ${app.score} points"
+        infoLabel.text = "<html>User: ${game.name}<br>Score: ${game.score} points"
 
-        resetButton.isEnabled = app.score > 0
+        resetButton.isEnabled = game.score > 0
     }
 
     fun show() {
