@@ -9,7 +9,13 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
 
-    val game = Game()                 // Get an app state object
+    val startLocation = Location(
+        "Lifepod 5",
+        "Safe shallows the only floating pod that survived",
+        0
+    )
+
+    val game = Game(startLocation)                 // Get an app state object
     val window = MainWindow(game)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
@@ -23,7 +29,10 @@ class Location(
 ) {
     var visited: Boolean = false
 
-
+    fun info(): String {
+        var infoText = "$name is at $description ${distance}M"
+        return infoText
+    }
 }
 
 
@@ -33,45 +42,78 @@ class Location(
  * @property name the user's name
  * @property score the points earned
  */
-class Game {
-    var name = "SubPod"
+class Game(
+    var currentLocation: Location
+
+) {
+    var name = "Ned"
     var score = 0
 
     val lifepods = mutableListOf<Location>()
 
     init {
-        val lifepod3 = Location("Lifepod 3", "Safe, shallow, in the Kelp Forest", 250)
-
+        val lifepod5 = Location("Lifepod 5", "Safe shallows the only floating pod that survived", 0)
+        val lifepod3 = Location("Lifepod 3", "Kelp Forest which has some predators but is mostly safe", 250)
         val lifepod17 = Location("Lifepod 17", "Open Grassy Plateaus, good visibility", 350)
-
         val lifepod6 = Location("Lifepod 6", "Grassy Plateaus, slightly deeper and more open", 450)
-
         val lifepod13 = Location("Lifepod 13", "Mushroom Forest, unique and visually distinct", 650)
-
         val lifepod7 = Location("Lifepod 7", "Crag Field, rugged terrain with more tension", 750)
-
         val lifepod19 = Location("Lifepod 19", "Sparse Reef, darker and more isolated", 850)
-
         val lifepod12 = Location("Lifepod 12", "Bulb Zone, alien environment", 950)
-
         val lifepod2 = Location("Lifepod 2", "Blood Kelp Zone, furthest and very dangerous", 1200)
 
+        lifepods.add(lifepod5)
         lifepods.add(lifepod3)
-
         lifepods.add(lifepod17)
-
         lifepods.add(lifepod6)
-
         lifepods.add(lifepod13)
-
         lifepods.add(lifepod7)
-
         lifepods.add(lifepod19)
-
         lifepods.add(lifepod12)
-
         lifepods.add(lifepod2)
+    }
 
+    fun addLifepod(lifepod: Location) {
+        lifepods.add(lifepod)
+    }
+
+    fun info(): String {
+        var infoText = "`"
+        for (lifepod in lifepods) {
+            infoText += "\n" + lifepod.info()
+        }
+        return infoText
+    }
+
+    fun getAction(): Char {
+        while (true) {
+            print("Action: ")
+            val action = readlnOrNull()?.firstOrNull()?.uppercaseChar()
+            if (action != null && action in "") return action
+        }
+    }
+
+    fun getDestination(): Location {
+
+        for (lifepod in lifepods) {
+            println(lifepod.name)
+        }
+
+        print("Where do you want to travel? ")
+
+        val input = readlnOrNull()
+
+        for (lifepod in lifepods) {
+            if (lifepod.name.equals(input, ignoreCase = true)) {
+                return lifepod
+            }
+        }
+        println("That isn't a lifepod ")
+        return currentLocation
+    }
+
+    fun travelTo(destination: Location) {
+        currentLocation = destination
     }
 
     fun scorePoints(points: Int) {
@@ -94,13 +136,13 @@ class Game {
  * @param game the app state object
  */
 class MainWindow(val game: Game) {
-    val frame = JFrame("WINDOW TITLE")
+    val frame = JFrame("SUBPOD")
     private val panel = JPanel().apply { layout = null }
 
-    private val titleLabel = JLabel("APP TITLE")
+    private val titleLabel = JLabel("SUBPOD")
 
     private val infoLabel = JLabel()
-    private val clickButton = JButton("Click Me!")
+    private val moveButton = JButton("Move")
     private val infoButton = JButton("Info")
 
     private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
@@ -114,16 +156,16 @@ class MainWindow(val game: Game) {
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(400, 220)
+        panel.preferredSize = java.awt.Dimension(800, 600)
 
-        titleLabel.setBounds(30, 30, 340, 30)
+        titleLabel.setBounds(330, 30, 340, 30)
         infoLabel.setBounds(30, 90, 340, 30)
-        clickButton.setBounds(30, 150, 240, 40)
-        infoButton.setBounds(300, 150, 70, 40)
+        moveButton.setBounds(275, 500, 240, 40)
+        infoButton.setBounds(360, 550, 70, 40)
 
         panel.add(titleLabel)
         panel.add(infoLabel)
-        panel.add(clickButton)
+        panel.add(moveButton)
         panel.add(infoButton)
     }
 
@@ -131,8 +173,8 @@ class MainWindow(val game: Game) {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
         infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
-        clickButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        clickButton.background = Color(0xcc0055)
+        moveButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        moveButton.background = Color(0xcc0055)
 
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
@@ -146,11 +188,11 @@ class MainWindow(val game: Game) {
     }
 
     private fun setupActions() {
-        clickButton.addActionListener { handleMainClick() }
+        moveButton.addActionListener { handleMoveClick() }
         infoButton.addActionListener { handleInfoClick() }
     }
 
-    private fun handleMainClick() {
+    private fun handleMoveClick() {
         game.scorePoints(1000)       // Update the app state
         updateUI()                  // Update this window UI to reflect this
     }
@@ -160,15 +202,15 @@ class MainWindow(val game: Game) {
     }
 
     fun updateUI() {
-        infoLabel.text = "User ${game.name} has ${game.score} points"
+        infoLabel.text = "Current location: ${game.currentLocation.name}"
 
-        if (game.maxScoreReached()) {
-            clickButton.text = "No More!"
-            clickButton.isEnabled = false
-        } else {
-            clickButton.text = "Click Me!"
-            clickButton.isEnabled = true
-        }
+//        if (game.maxScoreReached()) {
+//            moveButton.text = "No More!"
+//            moveButton.isEnabled = false
+//        } else {
+//            moveButton.text = "Click Me!"
+//            moveButton.isEnabled = true
+//        }
 
         infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
     }
