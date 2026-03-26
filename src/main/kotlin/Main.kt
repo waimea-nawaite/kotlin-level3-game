@@ -1,5 +1,4 @@
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
-import java.awt.Color
 import java.awt.Font
 import javax.swing.*
 
@@ -15,7 +14,7 @@ fun main() {
         0
     )
 
-    val game = Game(startLocation)                 // Get an app state object
+    val game = Game(startLocation)    // Get an app state object
     val window = MainWindow(game)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
@@ -30,7 +29,7 @@ class Location(
     var visited: Boolean = false
 
     fun info(): String {
-        var infoText = "$name is at $description ${distance}M"
+        val infoText = "$name is at $description ${distance}M"
         return infoText
     }
 }
@@ -73,12 +72,16 @@ class Game(
         lifepods.add(lifepod2)
     }
 
+    fun findLocationByName(name: String): Location {
+        return lifepods.first { it.name == name }
+    }
+
     fun addLifepod(lifepod: Location) {
         lifepods.add(lifepod)
     }
 
     fun info(): String {
-        var infoText = "`"
+        var infoText = ""
         for (lifepod in lifepods) {
             infoText += "\n" + lifepod.info()
         }
@@ -93,27 +96,15 @@ class Game(
         }
     }
 
-    fun getDestination(): Location {
+    fun travelTo(destination: Location): String {
+        val distance = kotlin.math.abs(destination.distance - currentLocation.distance)
 
-        for (lifepod in lifepods) {
-            println(lifepod.name)
+        if (distance > 400) {
+            return ("Too far away!")
         }
 
-        print("Where do you want to travel? ")
-
-        val input = readlnOrNull()
-
-        for (lifepod in lifepods) {
-            if (lifepod.name.equals(input, ignoreCase = true)) {
-                return lifepod
-            }
-        }
-        println("That isn't a lifepod ")
-        return currentLocation
-    }
-
-    fun travelTo(destination: Location) {
         currentLocation = destination
+        return "Travelled to ${destination.name}"
     }
 
     fun scorePoints(points: Int) {
@@ -142,7 +133,15 @@ class MainWindow(val game: Game) {
     private val titleLabel = JLabel("SUBPOD")
 
     private val infoLabel = JLabel()
-    private val moveButton = JButton("Move")
+    private val location1 = JButton("Lifepod 5")
+    private val location2 = JButton("Lifepod 3")
+    private val location3 = JButton("Lifepod 17")
+    private val location4 = JButton("Lifepod 6")
+    private val location5 = JButton("Lifepod 13")
+    private val location6 = JButton("Lifepod 7")
+    private val location7 = JButton("Lifepod 19")
+    private val location8 = JButton("Lifepod 12")
+    private val location9 = JButton("Lifepod 2")
     private val infoButton = JButton("Info")
 
     private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
@@ -160,21 +159,36 @@ class MainWindow(val game: Game) {
 
         titleLabel.setBounds(330, 30, 340, 30)
         infoLabel.setBounds(30, 90, 340, 30)
-        moveButton.setBounds(275, 500, 240, 40)
         infoButton.setBounds(360, 550, 70, 40)
+        location1.setBounds(20, 540, 90, 40)
+        location2.setBounds(110, 540, 90, 40)
+        location3.setBounds(200, 540, 90, 40)
+        location4.setBounds(20, 500, 90, 40)
+        location5.setBounds(110, 500, 90, 40)
+        location6.setBounds(200, 500, 90, 40)
+        location7.setBounds(20, 460, 90, 40)
+        location8.setBounds(110, 460, 90, 40)
+        location9.setBounds(200, 460, 90, 40)
+
 
         panel.add(titleLabel)
         panel.add(infoLabel)
-        panel.add(moveButton)
         panel.add(infoButton)
+        panel.add(location1)
+        panel.add(location2)
+        panel.add(location3)
+        panel.add(location4)
+        panel.add(location5)
+        panel.add(location6)
+        panel.add(location7)
+        panel.add(location8)
+        panel.add(location9)
+
     }
 
     private fun setupStyles() {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
         infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-
-        moveButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        moveButton.background = Color(0xcc0055)
 
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
@@ -188,12 +202,23 @@ class MainWindow(val game: Game) {
     }
 
     private fun setupActions() {
-        moveButton.addActionListener { handleMoveClick() }
+        location1.addActionListener { handleLocationClick("Lifepod 5") }
+        location2.addActionListener { handleLocationClick("Lifepod 3") }
+        location3.addActionListener { handleLocationClick("Lifepod 17") }
+        location4.addActionListener { handleLocationClick("Lifepod 6") }
+        location5.addActionListener { handleLocationClick("Lifepod 13") }
+        location6.addActionListener { handleLocationClick("Lifepod 7") }
+        location7.addActionListener { handleLocationClick("Lifepod 19") }
+        location8.addActionListener { handleLocationClick("Lifepod 12") }
+        location9.addActionListener { handleLocationClick("Lifepod 2") }
         infoButton.addActionListener { handleInfoClick() }
     }
 
-    private fun handleMoveClick() {
-        game.scorePoints(1000)       // Update the app state
+    private fun handleLocationClick(locationName: String) {
+        val destination = game.findLocationByName(locationName)
+        val resultMessage = game.travelTo(destination)
+        infoLabel.text = "$resultMessage | Current: ${game.currentLocation.name}"
+
         updateUI()                  // Update this window UI to reflect this
     }
 
