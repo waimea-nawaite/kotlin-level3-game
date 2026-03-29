@@ -24,12 +24,12 @@ fun main() {
 class Location(
     val name: String,
     val description: String,
-    val distance: Int
+    val distanceToStartPod: Int
 ) {
     var visited: Boolean = false
 
     fun info(): String {
-        val infoText = "$name is at $description ${distance}M"
+        val infoText = "$name is at $description ${distanceToStartPod}M"
         return infoText
     }
 }
@@ -52,7 +52,7 @@ class Game(
 
     init {
         val lifepod5 = Location("Lifepod 5", "Safe shallows the only floating pod that survived", 0)
-        val lifepod3 = Location("Lifepod 3", "Kelp Forest which has some predators but is mostly safe", 250)
+        val lifepod3 = Location("Lifepod 3", "Kelp Forest lush green kelp is mostly safe", 250)
         val lifepod17 = Location("Lifepod 17", "Open Grassy Plateaus, good visibility", 350)
         val lifepod6 = Location("Lifepod 6", "Grassy Plateaus, slightly deeper and more open", 450)
         val lifepod13 = Location("Lifepod 13", "Mushroom Forest, unique and visually distinct", 650)
@@ -80,14 +80,6 @@ class Game(
         lifepods.add(lifepod)
     }
 
-    fun info(): String {
-        var infoText = ""
-        for (lifepod in lifepods) {
-            infoText += "\n" + lifepod.info()
-        }
-        return infoText
-    }
-
     fun getAction(): Char {
         while (true) {
             print("Action: ")
@@ -96,15 +88,8 @@ class Game(
         }
     }
 
-    fun travelTo(destination: Location): String {
-        val distance = kotlin.math.abs(destination.distance - currentLocation.distance)
-
-        if (distance > 400) {
-            return ("Too far away!")
-        }
-
+    fun travelTo(destination: Location) {
         currentLocation = destination
-        return "Travelled to ${destination.name}"
     }
 
     fun scorePoints(points: Int) {
@@ -119,7 +104,6 @@ class Game(
         return score >= 10000
     }
 }
-
 
 /**
  * Main UI window, handles user clicks, etc.
@@ -157,8 +141,8 @@ class MainWindow(val game: Game) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(800, 600)
 
-        titleLabel.setBounds(330, 30, 340, 30)
-        infoLabel.setBounds(30, 90, 340, 30)
+        titleLabel.setBounds(330, 20, 340, 30)
+        infoLabel.setBounds(30, 90, 600, 30)
         infoButton.setBounds(360, 550, 70, 40)
         location1.setBounds(20, 540, 90, 40)
         location2.setBounds(110, 540, 90, 40)
@@ -216,8 +200,7 @@ class MainWindow(val game: Game) {
 
     private fun handleLocationClick(locationName: String) {
         val destination = game.findLocationByName(locationName)
-        val resultMessage = game.travelTo(destination)
-        infoLabel.text = "$resultMessage | Current: ${game.currentLocation.name}"
+        game.travelTo(destination)
 
         updateUI()                  // Update this window UI to reflect this
     }
@@ -227,7 +210,8 @@ class MainWindow(val game: Game) {
     }
 
     fun updateUI() {
-        infoLabel.text = "Current location: ${game.currentLocation.name}"
+        infoLabel.text =
+            "Current location: ${game.currentLocation.name} | Distance from lifepod 5: ${game.currentLocation.distanceToStartPod}m"
 
 //        if (game.maxScoreReached()) {
 //            moveButton.text = "No More!"
