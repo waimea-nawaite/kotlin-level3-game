@@ -8,13 +8,7 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
 
-    val startLocation = Location(
-        "Lifepod 5",
-        "Safe shallows the only floating pod that survived",
-        0
-    )
-
-    val game = Game(startLocation)    // Get an app state object
+    val game = Game()    // Get an app state object
     val window = MainWindow(game)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
@@ -22,14 +16,14 @@ fun main() {
 
 
 class Location(
-    val name: String,
+    val podName: String,
     val description: String,
-    val distanceToStartPod: Int
+    val distanceToStartPod: Int,
 ) {
     var visited: Boolean = false
 
     fun info(): String {
-        val infoText = "$name is at $description ${distanceToStartPod}M"
+        val infoText = "$podName is at $description ${distanceToStartPod}M"
         return infoText
     }
 }
@@ -41,14 +35,13 @@ class Location(
  * @property name the user's name
  * @property score the points earned
  */
-class Game(
-    var currentLocation: Location
-
-) {
+class Game() {
     var name = "Ned"
     var score = 0
 
     val lifepods = mutableListOf<Location>()
+
+    var currentPodIndex: Int    // Index into the list of the player's location
 
     init {
         val lifepod5 = Location("Lifepod 5", "Safe shallows the only floating pod that survived", 0)
@@ -70,26 +63,33 @@ class Game(
         lifepods.add(lifepod19)
         lifepods.add(lifepod12)
         lifepods.add(lifepod2)
+
+        currentPodIndex = 0
+
     }
 
-    fun findLocationByName(name: String): Location {
-        return lifepods.first { it.name == name }
-    }
-
-    fun addLifepod(lifepod: Location) {
-        lifepods.add(lifepod)
-    }
-
-    fun getAction(): Char {
-        while (true) {
-            print("Action: ")
-            val action = readlnOrNull()?.firstOrNull()?.uppercaseChar()
-            if (action != null && action in "") return action
+    fun goNorth() {
+        if (currentPodIndex - 3 >= 0) {
+            currentPodIndex -= 3
         }
     }
 
-    fun travelTo(destination: Location) {
-        currentLocation = destination
+    fun goEast() {
+        if (currentPodIndex % 3 != 2) {
+            currentPodIndex++
+        }
+    }
+
+    fun goSouth() {
+        if (currentPodIndex + 3 <= 8) {
+            currentPodIndex += 3
+        }
+    }
+
+    fun goWest() {
+        if (currentPodIndex % 3 != 0) {
+            currentPodIndex--
+        }
     }
 
     fun scorePoints(points: Int) {
@@ -116,16 +116,13 @@ class MainWindow(val game: Game) {
 
     private val titleLabel = JLabel("SUBPOD")
 
-    private val infoLabel = JLabel()
-    private val location1 = JButton("Lifepod 5")
-    private val location2 = JButton("Lifepod 3")
-    private val location3 = JButton("Lifepod 17")
-    private val location4 = JButton("Lifepod 6")
-    private val location5 = JButton("Lifepod 13")
-    private val location6 = JButton("Lifepod 7")
-    private val location7 = JButton("Lifepod 19")
-    private val location8 = JButton("Lifepod 12")
-    private val location9 = JButton("Lifepod 2")
+    private val lifepodLabel = JLabel()
+    private val descriptionLabel = JLabel()
+    private val distanceLabel = JLabel()
+    private val northButton = JButton("North")
+    private val eastButton = JButton("East")
+    private val southButton = JButton("South")
+    private val westButton = JButton("West")
     private val infoButton = JButton("Info")
 
     private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
@@ -142,37 +139,34 @@ class MainWindow(val game: Game) {
         panel.preferredSize = java.awt.Dimension(800, 600)
 
         titleLabel.setBounds(330, 20, 340, 30)
-        infoLabel.setBounds(30, 90, 600, 30)
+        lifepodLabel.setBounds(30, 90, 600, 30)
+        descriptionLabel.setBounds(30, 120, 600, 30)
+        distanceLabel.setBounds(30, 150, 600, 30)
         infoButton.setBounds(360, 550, 70, 40)
-        location1.setBounds(20, 540, 90, 40)
-        location2.setBounds(110, 540, 90, 40)
-        location3.setBounds(200, 540, 90, 40)
-        location4.setBounds(20, 500, 90, 40)
-        location5.setBounds(110, 500, 90, 40)
-        location6.setBounds(200, 500, 90, 40)
-        location7.setBounds(20, 460, 90, 40)
-        location8.setBounds(110, 460, 90, 40)
-        location9.setBounds(200, 460, 90, 40)
+        northButton.setBounds(110, 460, 90, 40)
+        eastButton.setBounds(200, 500, 90, 40)
+        southButton.setBounds(110, 540, 90, 40)
+        westButton.setBounds(20, 500, 90, 40)
+
 
 
         panel.add(titleLabel)
-        panel.add(infoLabel)
+        panel.add(lifepodLabel)
+        panel.add(descriptionLabel)
+        panel.add(distanceLabel)
         panel.add(infoButton)
-        panel.add(location1)
-        panel.add(location2)
-        panel.add(location3)
-        panel.add(location4)
-        panel.add(location5)
-        panel.add(location6)
-        panel.add(location7)
-        panel.add(location8)
-        panel.add(location9)
+        panel.add(northButton)
+        panel.add(eastButton)
+        panel.add(southButton)
+        panel.add(westButton)
 
     }
 
     private fun setupStyles() {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        lifepodLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        distanceLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
@@ -185,24 +179,36 @@ class MainWindow(val game: Game) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
-    private fun setupActions() {
-        location1.addActionListener { handleLocationClick("Lifepod 5") }
-        location2.addActionListener { handleLocationClick("Lifepod 3") }
-        location3.addActionListener { handleLocationClick("Lifepod 17") }
-        location4.addActionListener { handleLocationClick("Lifepod 6") }
-        location5.addActionListener { handleLocationClick("Lifepod 13") }
-        location6.addActionListener { handleLocationClick("Lifepod 7") }
-        location7.addActionListener { handleLocationClick("Lifepod 19") }
-        location8.addActionListener { handleLocationClick("Lifepod 12") }
-        location9.addActionListener { handleLocationClick("Lifepod 2") }
-        infoButton.addActionListener { handleInfoClick() }
-    }
-
-    private fun handleLocationClick(locationName: String) {
-        val destination = game.findLocationByName(locationName)
-        game.travelTo(destination)
+    private fun handleNorthClick() {
+        game.goNorth()
 
         updateUI()                  // Update this window UI to reflect this
+    }
+
+    private fun handleEastClick() {
+        game.goEast()
+
+        updateUI()                  // Update this window UI to reflect this
+    }
+
+    private fun handleSouthClick() {
+        game.goSouth()
+
+        updateUI()                  // Update this window UI to reflect this
+    }
+
+    private fun handleWestClick() {
+        game.goWest()
+
+        updateUI()                  // Update this window UI to reflect this
+    }
+
+    private fun setupActions() {
+        northButton.addActionListener { handleNorthClick() }
+        eastButton.addActionListener { handleEastClick() }
+        southButton.addActionListener { handleSouthClick() }
+        westButton.addActionListener { handleWestClick() }
+        infoButton.addActionListener { handleInfoClick() }
     }
 
     private fun handleInfoClick() {
@@ -210,8 +216,10 @@ class MainWindow(val game: Game) {
     }
 
     fun updateUI() {
-        infoLabel.text =
-            "Current location: ${game.currentLocation.name} | Distance from lifepod 5: ${game.currentLocation.distanceToStartPod}m"
+        val location = game.lifepods[game.currentPodIndex]
+        lifepodLabel.text = "Current location: ${location.podName}"
+        descriptionLabel.text = "Description: ${location.description}"
+        distanceLabel.text = "Distance: ${location.distanceToStartPod}m"
 
 //        if (game.maxScoreReached()) {
 //            moveButton.text = "No More!"
@@ -228,7 +236,6 @@ class MainWindow(val game: Game) {
         frame.isVisible = true
     }
 }
-
 
 /**
  * Info UI window is a child dialog and shows how the
