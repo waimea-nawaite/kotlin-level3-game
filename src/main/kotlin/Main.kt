@@ -40,6 +40,7 @@ class Game() {
     var score = 0
 
     val lifepods = mutableListOf<Location>()
+    val blocked = Location("BLOCKED", "", 0)
 
     var currentPodIndex: Int    // Index into the list of the player's location
 
@@ -56,16 +57,18 @@ class Game() {
 
         lifepods.add(lifepod5)
         lifepods.add(lifepod3)
+        lifepods.add(blocked)
         lifepods.add(lifepod17)
-        lifepods.add(lifepod6)
-        lifepods.add(lifepod13)
+        lifepods.add(blocked)
         lifepods.add(lifepod7)
+        lifepods.add(lifepod13)
+        lifepods.add(lifepod6)
         lifepods.add(lifepod19)
         lifepods.add(lifepod12)
+        lifepods.add(blocked)
         lifepods.add(lifepod2)
 
         currentPodIndex = 0
-
     }
 
     fun goNorth() {
@@ -74,22 +77,63 @@ class Game() {
         }
     }
 
+    fun canGoNorth(): Boolean {
+        // Are we at top edge of map?
+        if (currentPodIndex - 3 < 0) return false
+
+        // See what is to the north
+        val northPod = lifepods[currentPodIndex - 3]
+        if (northPod == blocked) return false
+
+        // Not of edge, and not blocked
+        return true
+    }
+
     fun goEast() {
         if (currentPodIndex % 3 != 2) {
             currentPodIndex++
         }
     }
 
+    fun canGoEast(): Boolean {
+        if (currentPodIndex % 3 == 2) return false
+
+        val eastPod = lifepods[currentPodIndex + 1]
+        if (eastPod == blocked) return false
+
+        return true
+    }
+
     fun goSouth() {
-        if (currentPodIndex + 3 <= 8) {
+        if (currentPodIndex + 3 <= 11) {
             currentPodIndex += 3
         }
+    }
+
+    fun canGoSouth(): Boolean {
+
+        if (currentPodIndex + 3 > 11) return false
+
+        val southPod = lifepods[currentPodIndex + 3]
+        if (southPod == blocked) return false
+
+        return true
     }
 
     fun goWest() {
         if (currentPodIndex % 3 != 0) {
             currentPodIndex--
         }
+    }
+
+    fun canGoWest(): Boolean {
+
+        if (currentPodIndex % 3 == 0) return false
+
+        val westPod = lifepods[currentPodIndex - 1]
+        if (westPod == blocked) return false
+
+        return true
     }
 
     fun scorePoints(points: Int) {
@@ -220,6 +264,11 @@ class MainWindow(val game: Game) {
         lifepodLabel.text = "Current location: ${location.podName}"
         descriptionLabel.text = "Description: ${location.description}"
         distanceLabel.text = "Distance: ${location.distanceToStartPod}m"
+
+        northButton.isEnabled = game.canGoNorth()
+        eastButton.isEnabled = game.canGoEast()
+        southButton.isEnabled = game.canGoSouth()
+        westButton.isEnabled = game.canGoWest()
 
 //        if (game.maxScoreReached()) {
 //            moveButton.text = "No More!"
