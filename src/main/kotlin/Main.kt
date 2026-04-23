@@ -8,6 +8,11 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
 
+    UIManager.put("Panel.background", java.awt.Color(5, 15, 25))   // dark blue
+    UIManager.put("Label.foreground", java.awt.Color(0, 180, 255))
+    UIManager.put("Button.background", java.awt.Color(0, 60, 100))
+    UIManager.put("Button.foreground", java.awt.Color.WHITE)
+
     val game = Game()    // Get an app state object
     val window = MainWindow(game)    // Spawn the UI, passing in the app state
 
@@ -82,11 +87,11 @@ class Game() {
         lifepods.add(lifepod13)
         lifepods.add(blocked)
         lifepods.add(openOcean)
-        lifepods.add(lifepod7)
+        lifepods.add(lifepod19)
 
         lifepods.add(openOcean)
         lifepods.add(openOcean)
-        lifepods.add(lifepod19)
+        lifepods.add(lifepod7)
         lifepods.add(blocked)
 
         lifepods.add(blocked)
@@ -100,7 +105,7 @@ class Game() {
         lifepods.add(openOcean)
 
         lifepods
-            .filter { it != blocked && it != lifepod5 }
+            .filter { it != blocked && it != lifepod5 && it != openOcean }
             .shuffled()
             .take(4)
             .forEach {
@@ -204,7 +209,7 @@ class MainWindow(val game: Game) {
     private val lifepodLabel = JLabel()
     private val descriptionLabel = JLabel()
     private val distanceLabel = JLabel()
-    private val allPdasCollectedLabel = JLabel("All PDAS collected return to lifepod 5")
+    private val pdaNotificationLabel = JLabel("PDA collected!")
     private val northButton = JButton("North")
     private val eastButton = JButton("East")
     private val southButton = JButton("South")
@@ -228,20 +233,18 @@ class MainWindow(val game: Game) {
         lifepodLabel.setBounds(30, 90, 600, 30)
         descriptionLabel.setBounds(30, 120, 600, 30)
         distanceLabel.setBounds(30, 150, 600, 30)
-        allPdasCollectedLabel.setBounds(30, 300, 600, 30)
+        pdaNotificationLabel.setBounds(30, 300, 600, 30)
         infoButton.setBounds(360, 550, 70, 40)
         northButton.setBounds(110, 460, 90, 40)
         eastButton.setBounds(200, 500, 90, 40)
         southButton.setBounds(110, 540, 90, 40)
         westButton.setBounds(20, 500, 90, 40)
 
-
-
         panel.add(titleLabel)
         panel.add(lifepodLabel)
         panel.add(descriptionLabel)
         panel.add(distanceLabel)
-        panel.add(allPdasCollectedLabel)
+        panel.add(pdaNotificationLabel)
         panel.add(infoButton)
         panel.add(northButton)
         panel.add(eastButton)
@@ -255,7 +258,7 @@ class MainWindow(val game: Game) {
         lifepodLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         distanceLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        allPdasCollectedLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        pdaNotificationLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
 
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
@@ -270,25 +273,21 @@ class MainWindow(val game: Game) {
 
     private fun handleNorthClick() {
         game.goNorth()
-
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleEastClick() {
         game.goEast()
-
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleSouthClick() {
         game.goSouth()
-
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleWestClick() {
         game.goWest()
-
         updateUI()                  // Update this window UI to reflect this
     }
 
@@ -386,7 +385,7 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
 
     fun updateUI() {
         // Use app properties to display state
-        infoLabel.text = "<html>User: ${game.name}<br>Score: ${game.score} points"
+        infoLabel.text = "<html>User: ${game.name}<br>PDAS: ${game.score}"
 
 //        resetButton.isEnabled = game.score > 0
     }
