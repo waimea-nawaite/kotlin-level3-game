@@ -1,6 +1,6 @@
-# PROJECT NAME HERE
+# SUBPOD
 
-by YOUR NAME HERE
+by Ned Waite
 
 ---
 

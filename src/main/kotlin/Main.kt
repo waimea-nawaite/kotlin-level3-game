@@ -26,11 +26,6 @@ class Location(
     val distanceToStartPod: Int,
 ) {
     var hasPda: Boolean = false
-
-    fun info(): String {
-        val infoText = "$podName is at $description ${distanceToStartPod}M"
-        return infoText
-    }
 }
 
 
@@ -41,8 +36,9 @@ class Location(
  * @property score the points earned
  */
 class Game() {
-    var name = "Ned"
+    var name = "User"
     var score = 0
+    var oxygen = 100
 
     fun scorePdas(pdas: Int) {
         score += pdas
@@ -52,6 +48,7 @@ class Game() {
         return score >= 4
     }
 
+
     val lifepods = mutableListOf<Location>()
     val blocked = Location("BLOCKED", "", 0)
     val openOcean = Location("OpenOcean", "Nothing but water here", 0)
@@ -60,14 +57,14 @@ class Game() {
 
     init {
         val lifepod5 = Location("Lifepod 5", "Safe shallows the only floating pod that survived", 0)
-        val lifepod17 = Location("Lifepod 17", "Open Grassy Plateaus, good visibility", 350)
-        val lifepod6 = Location("Lifepod 6", "Grassy Plateaus, slightly deeper and more open", 450)
-        val lifepod13 = Location("Lifepod 13", "Mushroom Forest, unique and visually distinct", 650)
-        val lifepod7 = Location("Lifepod 7", "Crag Field, rugged terrain with more tension", 750)
-        val lifepod19 = Location("Lifepod 19", "Sparse Reef, darker and more isolated", 850)
-        val lifepod12 = Location("Lifepod 12", "Bulb Zone, alien environment", 950)
-        val lifepod3 = Location("Lifepod 3", "Far but seems safe and calm...", 1100)
-        val lifepod2 = Location("Lifepod 2", "Blood Kelp Zone, furthest and very dangerous", 1200)
+        val lifepod17 = Location("Lifepod 17", "Open Grassy Plateaus, good visibility", 100)
+        val lifepod6 = Location("Lifepod 6", "Grassy Plateaus, slightly deeper and more open", 200)
+        val lifepod13 = Location("Lifepod 13", "Mushroom Forest, unique and visually distinct", 250)
+        val lifepod7 = Location("Lifepod 7", "Crag Field, rugged terrain with more tension", 400)
+        val lifepod12 = Location("Lifepod 12", "Bulb Zone, alien environment", 400)
+        val lifepod19 = Location("Lifepod 19", "Sparse Reef, darker and more isolated", 500)
+        val lifepod3 = Location("Lifepod 3", "Far but seems safe and calm...", 500)
+        val lifepod2 = Location("Lifepod 2", "Blood Kelp Zone, furthest and very dangerous", 600)
 
         lifepods.add(lifepod5)
         lifepods.add(openOcean)
@@ -116,9 +113,19 @@ class Game() {
 
     }
 
+    fun useOxygen(distance: Int) {
+        val oxygenLoss = (distance / 50) * 10
+        oxygen -= oxygenLoss
+        oxygen = oxygen.coerceAtLeast(0)
+        if (oxygen < 0) {
+            return
+        }
+    }
+
     fun goNorth() {
         if (canGoNorth()) {
             currentPodIndex -= 4
+            useOxygen(50)
             checkForPda()
         }
     }
@@ -138,6 +145,7 @@ class Game() {
     fun goEast() {
         if (canGoEast()) {
             currentPodIndex++
+            useOxygen(50)
             checkForPda()
         }
     }
@@ -154,6 +162,7 @@ class Game() {
     fun goSouth() {
         if (canGoSouth()) {
             currentPodIndex += 4
+            useOxygen(50)
             checkForPda()
         }
     }
@@ -171,6 +180,7 @@ class Game() {
     fun goWest() {
         if (canGoWest()) {
             currentPodIndex--
+            useOxygen(50)
             checkForPda()
         }
     }
@@ -209,11 +219,14 @@ class MainWindow(val game: Game) {
     private val lifepodLabel = JLabel()
     private val descriptionLabel = JLabel()
     private val distanceLabel = JLabel()
-    private val pdaNotificationLabel = JLabel("PDA collected!")
+    private val allPdasCollectedLabel = JLabel()
+    private val pdaNotificationLabel = JLabel()
     private val northButton = JButton("North")
     private val eastButton = JButton("East")
     private val southButton = JButton("South")
     private val westButton = JButton("West")
+    private val oxygenLevel = JLabel()
+    private val noOxygen = JLabel()
     private val infoButton = JButton("Info")
 
     private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
@@ -233,23 +246,30 @@ class MainWindow(val game: Game) {
         lifepodLabel.setBounds(30, 90, 600, 30)
         descriptionLabel.setBounds(30, 120, 600, 30)
         distanceLabel.setBounds(30, 150, 600, 30)
+        allPdasCollectedLabel.setBounds(30, 200, 600, 30)
         pdaNotificationLabel.setBounds(30, 300, 600, 30)
-        infoButton.setBounds(360, 550, 70, 40)
         northButton.setBounds(110, 460, 90, 40)
         eastButton.setBounds(200, 500, 90, 40)
         southButton.setBounds(110, 540, 90, 40)
         westButton.setBounds(20, 500, 90, 40)
+        oxygenLevel.setBounds(210, 540, 120, 40)
+        noOxygen.setBounds(300, 330, 180, 40)
+        infoButton.setBounds(360, 550, 70, 40)
+
 
         panel.add(titleLabel)
         panel.add(lifepodLabel)
         panel.add(descriptionLabel)
         panel.add(distanceLabel)
+        panel.add(allPdasCollectedLabel)
         panel.add(pdaNotificationLabel)
-        panel.add(infoButton)
         panel.add(northButton)
         panel.add(eastButton)
         panel.add(southButton)
         panel.add(westButton)
+        panel.add(oxygenLevel)
+        panel.add(noOxygen)
+        panel.add(infoButton)
 
     }
 
@@ -258,7 +278,10 @@ class MainWindow(val game: Game) {
         lifepodLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         distanceLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        allPdasCollectedLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         pdaNotificationLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        oxygenLevel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        noOxygen.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
 
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
@@ -308,19 +331,16 @@ class MainWindow(val game: Game) {
         lifepodLabel.text = "Current location: ${location.podName}"
         descriptionLabel.text = "Description: ${location.description}"
         distanceLabel.text = "Distance: ${location.distanceToStartPod}m"
+        oxygenLevel.text = "Oxygen: ${game.oxygen}"
 
         northButton.isEnabled = game.canGoNorth()
         eastButton.isEnabled = game.canGoEast()
         southButton.isEnabled = game.canGoSouth()
         westButton.isEnabled = game.canGoWest()
 
-//        if (game.maxScoreReached()) {
-//            moveButton.text = "No More!"
-//            moveButton.isEnabled = false
-//        } else {
-//            moveButton.text = "Click Me!"
-//            moveButton.isEnabled = true
-//        }
+        if (game.maxScoreReached()) {
+            allPdasCollectedLabel.text = "All pdas collected!"
+        }
 
         infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
     }
@@ -385,7 +405,7 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
 
     fun updateUI() {
         // Use app properties to display state
-        infoLabel.text = "<html>User: ${game.name}<br>PDAS: ${game.score}"
+        infoLabel.text = "PDAS: ${game.score}"
 
 //        resetButton.isEnabled = game.score > 0
     }
