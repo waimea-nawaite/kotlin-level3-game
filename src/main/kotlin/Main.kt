@@ -116,10 +116,13 @@ class Game() {
     fun useOxygen(distance: Int) {
         val oxygenLoss = (distance / 50) * 10
         oxygen -= oxygenLoss
-        oxygen = oxygen.coerceAtLeast(0)
         if (oxygen < 0) {
-            return
+            oxygen = 0
         }
+    }
+
+    fun anyOxygen(): Boolean {
+        return oxygen == 0
     }
 
     fun goNorth() {
@@ -203,6 +206,13 @@ class Game() {
             scorePdas(1)
         }
     }
+
+    fun restartGame() {
+        currentPodIndex = 0
+        oxygen = 100
+        score = 0
+
+    }
 }
 
 /**
@@ -226,7 +236,8 @@ class MainWindow(val game: Game) {
     private val southButton = JButton("South")
     private val westButton = JButton("West")
     private val oxygenLevel = JLabel()
-    private val noOxygen = JLabel()
+    private val anyOxygen = JLabel()
+    private val restartButton = JButton("Restart?")
     private val infoButton = JButton("Info")
 
     private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
@@ -253,7 +264,8 @@ class MainWindow(val game: Game) {
         southButton.setBounds(110, 540, 90, 40)
         westButton.setBounds(20, 500, 90, 40)
         oxygenLevel.setBounds(210, 540, 120, 40)
-        noOxygen.setBounds(300, 330, 180, 40)
+        anyOxygen.setBounds(300, 330, 180, 40)
+        restartButton.setBounds(285, 370, 180, 40)
         infoButton.setBounds(360, 550, 70, 40)
 
 
@@ -268,7 +280,8 @@ class MainWindow(val game: Game) {
         panel.add(southButton)
         panel.add(westButton)
         panel.add(oxygenLevel)
-        panel.add(noOxygen)
+        panel.add(anyOxygen)
+        panel.add(restartButton)
         panel.add(infoButton)
 
     }
@@ -281,8 +294,9 @@ class MainWindow(val game: Game) {
         allPdasCollectedLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         pdaNotificationLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         oxygenLevel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        noOxygen.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
+        anyOxygen.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
 
+        restartButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
 
@@ -320,6 +334,12 @@ class MainWindow(val game: Game) {
         southButton.addActionListener { handleSouthClick() }
         westButton.addActionListener { handleWestClick() }
         infoButton.addActionListener { handleInfoClick() }
+        restartButton.addActionListener { handleRestartClick() }
+    }
+
+    private fun handleRestartClick() {
+        game.restartGame()
+        updateUI()
     }
 
     private fun handleInfoClick() {
@@ -337,6 +357,16 @@ class MainWindow(val game: Game) {
         eastButton.isEnabled = game.canGoEast()
         southButton.isEnabled = game.canGoSouth()
         westButton.isEnabled = game.canGoWest()
+
+
+        if (game.anyOxygen()) {
+            anyOxygen.text = "No Oxygen"
+            northButton.isEnabled = false
+            eastButton.isEnabled = false
+            southButton.isEnabled = false
+            westButton.isEnabled = false
+            restartButton
+        }
 
         if (game.maxScoreReached()) {
             allPdasCollectedLabel.text = "All pdas collected!"
