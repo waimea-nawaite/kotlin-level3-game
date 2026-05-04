@@ -10,32 +10,69 @@ Terminology:
 
 ---
 
-## Example Test Name
+## Movement - Valid
 
-Example test description. Example test description. Example test description. Example test description. Example test description. Example test description.
-
-### Test Data To Use
-
-Details of test data and reasons for selection. Details of test data and reasons for selection. Details of test data and reasons for selection.
-
-### Expected Test Result
-
-Statement detailing what should happen. Statement detailing what should happen. Statement detailing what should happen. Statement detailing what should happen.
-
----
-
-## Example Test Name
-
-Example test description. Example test description. Example test description. Example test description. Example test description. Example test description.
+I will test to see if the player can move around the map freely
 
 ### Test Data To Use
 
-Details of test data and reasons for selection. Details of test data and reasons for selection. Details of test data and reasons for selection.
+I will try to move North, East, South, and west around the map
 
 ### Expected Test Result
 
-Statement detailing what should happen. Statement detailing what should happen. Statement detailing what should happen. Statement detailing what should happen.
+It should let the user move North, East, South, and West to a new index and should display a discription of where the
+user is.
 
 ---
 
+## Movement into blocked areas - Invalid
+
+I will test to see when the user hits a blocked path
+
+### Test Data To Use
+
+I will go to a blocked path and try to move onto the path
+
+### Expected Test Result
+
+It should not let the user move onto the blocked path and disable the button for e.g. East (if the blocked path is to
+the east)
+
+---
+
+## PDA collection - Valid
+
+I will test to see if PDAS are randomly spawning in diferent lifpods each game and that when the user collects one
+
+### Test data To Use
+
+I will try a couple games to see if the PDAS are in new spots
+
+### Expected Test Result
+
+Each PDA is in a new spot each game with a limit of 4 and that when the player collects the PDA it +1 to the score
+
+---
+
+## Oxygen Draining - Valid
+
+I will test to see if oxygen drains with each movement
+
+### Test data To Use
+
+I will try moving in each direction to see if the oxygen drains with each movement all by the same amount
+
+### Expected Test Result
+
+When the user moves the oxgyen should drain by a certain amount until 0
+
+---
+
+## Name
+
+### Test data To Use
+
+### Expected Test Result
+
+---
 

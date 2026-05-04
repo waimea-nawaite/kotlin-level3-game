@@ -4,35 +4,37 @@ The test results show the actual outcome of the testing, following the [Test Pla
 
 ---
 
-## Example Test Name
+## Movement - Valid
 
-Example test description. Example test description.Example test description. Example test description.Example test description. Example test description.
+I will test to see if the player can move around the map freely
 
-### Test Data Used
+### Test Data To Use
 
-Details of test data. Details of test data. Details of test data. Details of test data. Details of test data. Details of test data. Details of test data.
+I will try to move North, East, South, and west around the map
 
-### Test Result
+### Expected Test Result
 
-![example.png](screenshots/example.png)
+![](screenshots%2FMovementTest.gif)
 
-Comment on test result. Comment on test result. Comment on test result. Comment on test result. Comment on test result. Comment on test result.
 
 ---
 
 ## Example Test Name
 
-Example test description. Example test description.Example test description. Example test description.Example test description. Example test description.
+Example test description. Example test description.Example test description. Example test description.Example test
+description. Example test description.
 
 ### Test Data Used
 
-Details of test data. Details of test data. Details of test data. Details of test data. Details of test data. Details of test data. Details of test data.
+Details of test data. Details of test data. Details of test data. Details of test data. Details of test data. Details of
+test data. Details of test data.
 
 ### Test Result
 
 ![example.png](screenshots/example.png)
 
-Comment on test result. Comment on test result. Comment on test result. Comment on test result. Comment on test result. Comment on test result.
+Comment on test result. Comment on test result. Comment on test result. Comment on test result. Comment on test result.
+Comment on test result.
 
 ---
 

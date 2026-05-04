@@ -265,7 +265,6 @@ class MainWindow(val game: Game) {
         westButton.setBounds(20, 500, 90, 40)
         oxygenLevel.setBounds(210, 540, 120, 40)
         anyOxygen.setBounds(300, 330, 180, 40)
-        restartButton.setBounds(285, 370, 180, 40)
         infoButton.setBounds(360, 550, 70, 40)
 
 
@@ -281,7 +280,6 @@ class MainWindow(val game: Game) {
         panel.add(westButton)
         panel.add(oxygenLevel)
         panel.add(anyOxygen)
-        panel.add(restartButton)
         panel.add(infoButton)
 
     }
@@ -296,7 +294,6 @@ class MainWindow(val game: Game) {
         oxygenLevel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         anyOxygen.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
 
-        restartButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
     }
 
@@ -310,21 +307,25 @@ class MainWindow(val game: Game) {
 
     private fun handleNorthClick() {
         game.goNorth()
+//        checkDeath()
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleEastClick() {
         game.goEast()
+//        checkDeath()
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleSouthClick() {
         game.goSouth()
+//        checkDeath()
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleWestClick() {
         game.goWest()
+//        checkDeath()
         updateUI()                  // Update this window UI to reflect this
     }
 
@@ -346,6 +347,20 @@ class MainWindow(val game: Game) {
         infoWindow.show()
     }
 
+//    private fun checkDeath() {
+//        if (game.oxygen <= 0) {
+//            val restart = JOptionPane.showConfirmDialog(
+//                frame,
+//                "Your Oxygen Supply Ran Out /nRestart?",
+//                JOptionPane.YES_NO_OPTION
+//            )
+//            if (restart == JOptionPane.YES_OPTION) {
+//                game.restartGame()
+//                updateUI()
+//            }
+//        }
+//    }
+
     fun updateUI() {
         val location = game.lifepods[game.currentPodIndex]
         lifepodLabel.text = "Current location: ${location.podName}"
@@ -357,16 +372,6 @@ class MainWindow(val game: Game) {
         eastButton.isEnabled = game.canGoEast()
         southButton.isEnabled = game.canGoSouth()
         westButton.isEnabled = game.canGoWest()
-
-
-        if (game.anyOxygen()) {
-            anyOxygen.text = "No Oxygen"
-            northButton.isEnabled = false
-            eastButton.isEnabled = false
-            southButton.isEnabled = false
-            westButton.isEnabled = false
-            restartButton
-        }
 
         if (game.maxScoreReached()) {
             allPdasCollectedLabel.text = "All pdas collected!"
