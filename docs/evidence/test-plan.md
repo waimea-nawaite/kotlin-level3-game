@@ -40,9 +40,23 @@ the east)
 
 ---
 
+## Map Boundary - Boundary
+
+I will test the map boundaries to stop the player from moving out the map
+
+### Test data To Use
+
+I will try go past all the edges of the map by moving the player to each side and try going North, East, South, and West
+
+### Expected Test Result
+
+It shouldn't let me go past the edge and disable the buttons to show where the boundary is
+
+---
+
 ## PDA collection - Valid
 
-I will test to see if PDAS are randomly spawning in diferent lifpods each game and that when the user collects one
+I will test to see if PDAS are randomly spawning in different lifepods each game and that when the user collects one
 
 ### Test data To Use
 
@@ -68,11 +82,4 @@ When the user moves the oxgyen should drain by a certain amount until 0
 
 ---
 
-## Name
-
-### Test data To Use
-
-### Expected Test Result
-
----
 

@@ -104,25 +104,20 @@ class Game() {
         lifepods
             .filter { it != blocked && it != lifepod5 && it != openOcean }
             .shuffled()
-            .take(4)
+            .take(3)
             .forEach {
                 it.hasPda = true
             }
 
         currentPodIndex = 0
-
     }
 
     fun useOxygen(distance: Int) {
-        val oxygenLoss = (distance / 50) * 10
+        val oxygenLoss = (distance / 50) * 5
         oxygen -= oxygenLoss
         if (oxygen < 0) {
             oxygen = 0
         }
-    }
-
-    fun anyOxygen(): Boolean {
-        return oxygen == 0
     }
 
     fun goNorth() {
@@ -204,6 +199,12 @@ class Game() {
         if (location.hasPda) {
             location.hasPda = false
             scorePdas(1)
+
+            oxygen += 15
+
+            if (oxygen > 100) {
+                oxygen = 100
+            }
         }
     }
 
@@ -211,7 +212,6 @@ class Game() {
         currentPodIndex = 0
         oxygen = 100
         score = 0
-
     }
 }
 
@@ -227,9 +227,9 @@ class MainWindow(val game: Game) {
     private val titleLabel = JLabel("SUBPOD")
 
     private val lifepodLabel = JLabel()
+    private val instructionsLabel = JLabel()
     private val descriptionLabel = JLabel()
     private val distanceLabel = JLabel()
-    private val allPdasCollectedLabel = JLabel()
     private val pdaNotificationLabel = JLabel()
     private val northButton = JButton("North")
     private val eastButton = JButton("East")
@@ -254,10 +254,10 @@ class MainWindow(val game: Game) {
         panel.preferredSize = java.awt.Dimension(800, 600)
 
         titleLabel.setBounds(330, 20, 340, 30)
+        instructionsLabel.setBounds(30, 60, 500, 400)
         lifepodLabel.setBounds(30, 90, 600, 30)
         descriptionLabel.setBounds(30, 120, 600, 30)
         distanceLabel.setBounds(30, 150, 600, 30)
-        allPdasCollectedLabel.setBounds(30, 200, 600, 30)
         pdaNotificationLabel.setBounds(30, 300, 600, 30)
         northButton.setBounds(110, 460, 90, 40)
         eastButton.setBounds(200, 500, 90, 40)
@@ -269,10 +269,10 @@ class MainWindow(val game: Game) {
 
 
         panel.add(titleLabel)
+        panel.add(instructionsLabel)
         panel.add(lifepodLabel)
         panel.add(descriptionLabel)
         panel.add(distanceLabel)
-        panel.add(allPdasCollectedLabel)
         panel.add(pdaNotificationLabel)
         panel.add(northButton)
         panel.add(eastButton)
@@ -286,10 +286,10 @@ class MainWindow(val game: Game) {
 
     private fun setupStyles() {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
+        instructionsLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
         lifepodLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         distanceLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        allPdasCollectedLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         pdaNotificationLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         oxygenLevel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         anyOxygen.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
@@ -307,25 +307,29 @@ class MainWindow(val game: Game) {
 
     private fun handleNorthClick() {
         game.goNorth()
-//        checkDeath()
+        checkDeath()
+        checkWin()
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleEastClick() {
         game.goEast()
-//        checkDeath()
+        checkDeath()
+        checkWin()
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleSouthClick() {
         game.goSouth()
-//        checkDeath()
+        checkDeath()
+        checkWin()
         updateUI()                  // Update this window UI to reflect this
     }
 
     private fun handleWestClick() {
         game.goWest()
-//        checkDeath()
+        checkDeath()
+        checkWin()
         updateUI()                  // Update this window UI to reflect this
     }
 
@@ -347,22 +351,44 @@ class MainWindow(val game: Game) {
         infoWindow.show()
     }
 
-//    private fun checkDeath() {
-//        if (game.oxygen <= 0) {
-//            val restart = JOptionPane.showConfirmDialog(
-//                frame,
-//                "Your Oxygen Supply Ran Out /nRestart?",
-//                JOptionPane.YES_NO_OPTION
-//            )
-//            if (restart == JOptionPane.YES_OPTION) {
-//                game.restartGame()
-//                updateUI()
-//            }
-//        }
-//    }
+    private fun checkDeath() {
+        if (game.oxygen <= 0) {
+            val restart = JOptionPane.showConfirmDialog(
+                frame, "Your Oxygen Supply Ran Out. Restart?",
+                "You Lost",
+                JOptionPane.YES_NO_OPTION
+            )
+
+            if (restart == JOptionPane.YES_OPTION) {
+                game.restartGame()
+                updateUI()
+            } else
+                frame.dispose()
+        }
+    }
+
+    private fun checkWin() {
+        if (game.score == 3) {
+            val restart = JOptionPane.showConfirmDialog(
+                frame, "You collected all the PDAS you win! Do you want to replay?",
+                "Victory",
+                JOptionPane.YES_NO_OPTION
+            )
+
+            if (restart == JOptionPane.YES_OPTION) {
+                game.restartGame()
+                updateUI()
+            } else
+                frame.dispose()
+        }
+    }
 
     fun updateUI() {
         val location = game.lifepods[game.currentPodIndex]
+        instructionsLabel.text =
+            "<html><center>Welcome to SUBPOD! In this game the objective is to collect all the PDAS scattered around the map!(3 total)." +
+                    "To move around press the North, East, South, and West buttons in the bottom left corner it is sort of like a maze." +
+                    "But be careful your oxygen runs out with each movement, each time you collect a PDA it refills +30% back. Not every time is a win, Goodluck!"
         lifepodLabel.text = "Current location: ${location.podName}"
         descriptionLabel.text = "Description: ${location.description}"
         distanceLabel.text = "Distance: ${location.distanceToStartPod}m"
@@ -372,10 +398,6 @@ class MainWindow(val game: Game) {
         eastButton.isEnabled = game.canGoEast()
         southButton.isEnabled = game.canGoSouth()
         westButton.isEnabled = game.canGoWest()
-
-        if (game.maxScoreReached()) {
-            allPdasCollectedLabel.text = "All pdas collected!"
-        }
 
         infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
     }
