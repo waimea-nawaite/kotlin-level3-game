@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * Programming Project for NCEA Level 3, Standard 91906
+ * ---------------------------------------------------------------------
+ * Project Name:   SUBPOD
+ * Project Author: NED WAITE
+ * GitHub Repo:    https://github.com/waimea-nawaite/kotlin-level3-game
+ * ---------------------------------------------------------------------
+ * Notes:
+ * PROJECT NOTES HERE
+ * =====================================================================
+ */
+
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Font
 import javax.swing.*
