@@ -1,14 +1,11 @@
-# PROJECT NAME HERE
+# Level 3 Game SUBPOD
 
-by YOUR NAME HERE
+by Ned Waite
 
 ## Project Description
 
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
+My game is about being on an ocean planet with lifepods scattered around some of them have PDAS that you need to
+collect but be careful oxygen runs out quick!
 
 ---
 

@@ -4,7 +4,7 @@ The test results show the actual outcome of the testing, following the [Test Pla
 
 ## The Map of SUBPOD:
 
-![MapOfSUBPOD.png](screenshots/MapOfSUBPOD.png)
+![MapOfSUBPOD.png](../../src/main/resources/images/MapOfSUBPOD.png)
 ---
 
 ## Movement - Valid

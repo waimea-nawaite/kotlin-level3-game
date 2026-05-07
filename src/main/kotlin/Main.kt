@@ -7,8 +7,8 @@ import javax.swing.*
  */
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
-
-    UIManager.put("Panel.background", java.awt.Color(5, 15, 25))   // dark blue
+    // Colors for the UI
+    UIManager.put("Panel.background", java.awt.Color(5, 15, 25))
     UIManager.put("Label.foreground", java.awt.Color(0, 180, 255))
     UIManager.put("Button.background", java.awt.Color(0, 60, 100))
     UIManager.put("Button.foreground", java.awt.Color.WHITE)
@@ -25,7 +25,7 @@ class Location(
     val description: String,
     val distanceToStartPod: Int,
 ) {
-    var hasPda: Boolean = false
+    var hasPDA: Boolean = false
 }
 
 
@@ -40,18 +40,14 @@ class Game() {
     var score = 0
     var oxygen = 100
 
+    // Score PDAs
     fun scorePdas(pdas: Int) {
         score += pdas
     }
 
-    fun maxScoreReached(): Boolean {
-        return score >= 4
-    }
-
-
     val lifepods = mutableListOf<Location>()
-    val blocked = Location("BLOCKED", "", 0)
-    val openOcean = Location("OpenOcean", "Nothing but water here", 0)
+    val blocked = Location("BLOCKED", "", 0)            //Blocked area
+    val openOcean = Location("OpenOcean", "Nothing but water here", 0)  //openOcean nothing is around
 
     var currentPodIndex: Int    // Index into the list of the player's location
 
@@ -66,6 +62,7 @@ class Game() {
         val lifepod3 = Location("Lifepod 3", "Far but seems safe and calm...", 500)
         val lifepod2 = Location("Lifepod 2", "Blood Kelp Zone, furthest and very dangerous", 600)
 
+        //This is the map layout
         lifepods.add(lifepod5)
         lifepods.add(openOcean)
         lifepods.add(blocked)
@@ -101,17 +98,29 @@ class Game() {
         lifepods.add(lifepod3)
         lifepods.add(openOcean)
 
-        lifepods
-            .filter { it != blocked && it != lifepod5 && it != openOcean }
-            .shuffled()
-            .take(3)
-            .forEach {
-                it.hasPda = true
-            }
+        resetPDAs()
 
+        //Sets the default spawn location
         currentPodIndex = 0
     }
 
+    //This function places the pdas on the map, shuffles them and blocks them from going into blocked areas
+    fun resetPDAs() {
+        for (pod in lifepods) {
+            pod.hasPDA = false
+        }
+        lifepods
+            .filter {
+                it != blocked && it != openOcean && it.podName != "Lifepod 5"
+            }
+            .shuffled()
+            .take(3)
+            .forEach {
+                it.hasPDA = true
+            }
+    }
+
+    //Everytime the player moves it takes away 5 oxygen
     fun useOxygen(distance: Int) {
         val oxygenLoss = (distance / 50) * 5
         oxygen -= oxygenLoss
@@ -120,6 +129,7 @@ class Game() {
         }
     }
 
+    //This function lets the player go north and the same with e.g. fun goEast but to the east
     fun goNorth() {
         if (canGoNorth()) {
             currentPodIndex -= 4
@@ -128,6 +138,8 @@ class Game() {
         }
     }
 
+    //This function checks if going north is allowed because if there is a blocked path then it shouldnt let
+    //the player go there and the same with e.g. fun canGoEast
     fun canGoNorth(): Boolean {
         // Are we at top edge of map?
         if (currentPodIndex - 4 < 0) return false
@@ -149,11 +161,14 @@ class Game() {
     }
 
     fun canGoEast(): Boolean {
+        //Are we at top edge of the map?
         if (currentPodIndex % 4 == 3) return false
 
+        //See what is to the East
         val eastPod = lifepods[currentPodIndex + 1]
         if (eastPod == blocked) return false
 
+        //Not the edge, and not blocked
         return true
     }
 
@@ -193,25 +208,30 @@ class Game() {
         return true
     }
 
+    //This function is pretty self explanatory it checks for a PDA at the location the player is at and if there is one it will plus 1 to the score
+    //And it also adds oxygen if a PDA is found
     fun checkForPda() {
         val location = lifepods[currentPodIndex]
-
-        if (location.hasPda) {
-            location.hasPda = false
+        //if location has a PDA then +1 to score
+        if (location.hasPDA) {
+            location.hasPDA = false
             scorePdas(1)
-
+            //If PDA collected
             oxygen += 15
-
+            //Dont let the oxygen go over 100
             if (oxygen > 100) {
                 oxygen = 100
             }
         }
     }
 
+    //This restarts the game if you die or win
     fun restartGame() {
         currentPodIndex = 0
         oxygen = 100
         score = 0
+
+        resetPDAs()
     }
 }
 
@@ -286,6 +306,7 @@ class MainWindow(val game: Game) {
 
     private fun setupStyles() {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
+        titleLabel.foreground = java.awt.Color(133, 103, 8)
         instructionsLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 15)
         lifepodLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         descriptionLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
@@ -305,10 +326,11 @@ class MainWindow(val game: Game) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
+    //these functions handle the clicks for movement
     private fun handleNorthClick() {
-        game.goNorth()
-        checkDeath()
-        checkWin()
+        game.goNorth()              //makes the player go north
+        checkDeath()                //Checks if no oxygen left
+        checkWin()                  //Check if player has all PDAs
         updateUI()                  // Update this window UI to reflect this
     }
 
@@ -351,7 +373,10 @@ class MainWindow(val game: Game) {
         infoWindow.show()
     }
 
+    //This function checks if the player runs out of oxygen and lets the user decide if they want to play again or quit
     private fun checkDeath() {
+
+        //If the player runs out of oxygen ask
         if (game.oxygen <= 0) {
             val restart = JOptionPane.showConfirmDialog(
                 frame, "Your Oxygen Supply Ran Out. Restart?",
@@ -359,15 +384,21 @@ class MainWindow(val game: Game) {
                 JOptionPane.YES_NO_OPTION
             )
 
+            //if user says yes
             if (restart == JOptionPane.YES_OPTION) {
                 game.restartGame()
                 updateUI()
-            } else
+            }
+
+            //Otherwise
+            else
                 frame.dispose()
         }
     }
 
+    //Same thing here if the player wins then the game asks if they want to play again or quit
     private fun checkWin() {
+        //If the player gets all the PDAS on map ask
         if (game.score == 3) {
             val restart = JOptionPane.showConfirmDialog(
                 frame, "You collected all the PDAS you win! Do you want to replay?",
@@ -375,10 +406,14 @@ class MainWindow(val game: Game) {
                 JOptionPane.YES_NO_OPTION
             )
 
+            //If user says yes
             if (restart == JOptionPane.YES_OPTION) {
                 game.restartGame()
                 updateUI()
-            } else
+            }
+
+            //Otherwise
+            else
                 frame.dispose()
         }
     }
@@ -394,6 +429,7 @@ class MainWindow(val game: Game) {
         distanceLabel.text = "Distance: ${location.distanceToStartPod}m"
         oxygenLevel.text = "Oxygen: ${game.oxygen}"
 
+        //enables the buttons if the game allows it to move that way
         northButton.isEnabled = game.canGoNorth()
         eastButton.isEnabled = game.canGoEast()
         southButton.isEnabled = game.canGoSouth()
@@ -415,16 +451,14 @@ class MainWindow(val game: Game) {
  * @param app the app state object
  */
 class InfoWindow(val owner: MainWindow, val game: Game) {
-    private val dialog = JDialog(owner.frame, "DATA", false)
+    private val dialog = JDialog(owner.frame, "PDAs", false)
     private val panel = JPanel().apply { layout = null }
 
     private val infoLabel = JLabel()
-//    private val resetButton = JButton("Reset")
 
     init {
         setupLayout()
         setupStyles()
-//        setupActions()
         setupWindow()
         updateUI()
     }
@@ -432,16 +466,14 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(240, 180)
 
-        infoLabel.setBounds(30, 30, 180, 60)
-//        resetButton.setBounds(30, 120, 180, 30)
+        infoLabel.setBounds(40, 50, 180, 60)
 
         panel.add(infoLabel)
-//        panel.add(resetButton)
     }
 
     private fun setupStyles() {
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
-//        resetButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
+        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
+
     }
 
     private fun setupWindow() {
@@ -451,20 +483,9 @@ class InfoWindow(val owner: MainWindow, val game: Game) {
         dialog.pack()
     }
 
-//    private fun setupActions() {
-//        resetButton.addActionListener { handleResetClick() }
-//    }
-
-//    private fun handleResetClick() {
-//       game.resetScore()    // Update the app state
-//        owner.updateUI()    // Update the UI to reflect this, via the main window
-//    }
-
     fun updateUI() {
         // Use app properties to display state
         infoLabel.text = "PDAS: ${game.score}"
-
-//        resetButton.isEnabled = game.score > 0
     }
 
     fun show() {
