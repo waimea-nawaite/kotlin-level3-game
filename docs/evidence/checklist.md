@@ -14,7 +14,7 @@ The game functions correctly and meets the specification:
 
 - [x] The game is **playable**
 - [x] The game has a **GUI** with a range of controls
-- [ ] The **instructions** for the game are available via the GUI
+- [x] The **instructions** for the game are available via the GUI
 - [x] Player provides game **inputs via the GUI** (e.g. moves, actions)
 - [x] The **current status** of the game is **shown in the GUI**, updated each player input
 - [x] The game is based on a **non-trivial map**
@@ -30,34 +30,34 @@ The program stores data using:
 
 The program structure:
 
-- [ ] Defines and implements a **graphical user interface (GUI)**
-- [ ] Makes use of user-defined OOP **classes** from which **objects** are instantiated
-- [ ] Uses **functions** / **methods** to break up the code logically
-- [ ] Contains **sequences** of instructions
-- [ ] Uses **conditional** instructions to control the program flow
-- [ ] Uses program **branches** (if...else, when, etc.)
-- [ ] Uses **iteration** (loops) to repeat things (for, while, etc.)
+- [x] Defines and implements a **graphical user interface (GUI)**
+- [x] Makes use of user-defined OOP **classes** from which **objects** are instantiated
+- [x] Uses **functions** / **methods** to break up the code logically
+- [x] Contains **sequences** of instructions
+- [x] Uses **conditional** instructions to control the program flow
+- [x] Uses program **branches** (if...else, when, etc.)
+- [x] Uses **iteration** (loops) to repeat things (for, while, etc.)
 
 ### Program Documentation
 
 The program code:
 
-- [ ] Is **indented** correctly
-- [ ] Is **laid-out clearly**
-- [ ] Contains **comments** that help in understanding how it works
+- [x] Is **indented** correctly
+- [x] Is **laid-out clearly**
+- [x] Contains **comments** that help in understanding how it works
 
 ### Program Testing
 
 The program has been tested and there is documented evidence that:
 
-- [ ] The game is **fully functional**, showing testing of:
-    - [ ] game setup
-    - [ ] player movement
-    - [ ] other player actions
-    - [ ] scoring (if any)
-    - [ ] player win / lose states
-    - [ ] final feedback (if appropriate)
-- [ ] **Valid (expected) data** has been used to test **all data inputs**
+- [x] The game is **fully functional**, showing testing of:
+    - [x] game setup
+    - [x] player movement
+    - [x] other player actions
+    - [x] scoring (if any)
+    - [x] player win / lose states
+    - [x] final feedback (if appropriate)
+- [x] **Valid (expected) data** has been used to test **all data inputs**
 - [ ] Where tests have failed, **fixes** are discussed and **tests re-run**
 
 ---
@@ -68,11 +68,11 @@ The program has been tested and there is documented evidence that:
 
 The program stores data using variables, where:
 
-- [ ] Variable **names are well-chosen** (relating to their purpose)
-- [ ] Variable names **begin with lowercase**
-- [ ] Naming is consistent, either **camelCase or snake_case**
+- [x] Variable **names are well-chosen** (relating to their purpose)
+- [x] Variable names **begin with lowercase**
+- [x] Naming is consistent, either **camelCase or snake_case**
 - [ ] Variables are **scoped appropriately** (global or local to a function)
-- [ ] **Global** variables are only used if **genuinely needed**
+- [x] **Global** variables are only used if **genuinely needed**
 
 The program uses OOP classes and objects appropriately, where:
 

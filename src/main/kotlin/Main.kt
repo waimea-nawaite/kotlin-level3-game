@@ -7,7 +7,6 @@
  * GitHub Repo:    https://github.com/waimea-nawaite/kotlin-level3-game
  * ---------------------------------------------------------------------
  * Notes:
- * PROJECT NOTES HERE
  * =====================================================================
  */
 
@@ -270,10 +269,7 @@ class MainWindow(val game: Game) {
     private val westButton = JButton("West")
     private val oxygenLevel = JLabel()
     private val anyOxygen = JLabel()
-    private val restartButton = JButton("Restart?")
-    private val infoButton = JButton("Info")
-
-    private val infoWindow = InfoWindow(this, game)      // Pass app state to dialog too
+    private val pdaCounterLabel = JLabel()
 
     init {
         setupLayout()
@@ -287,10 +283,10 @@ class MainWindow(val game: Game) {
         panel.preferredSize = java.awt.Dimension(800, 600)
 
         titleLabel.setBounds(330, 20, 340, 30)
-        instructionsLabel.setBounds(30, 60, 500, 400)
-        lifepodLabel.setBounds(30, 90, 600, 30)
-        descriptionLabel.setBounds(30, 120, 600, 30)
-        distanceLabel.setBounds(30, 150, 600, 30)
+        instructionsLabel.setBounds(30, 60, 500, 140)
+        lifepodLabel.setBounds(30, 240, 600, 30)
+        descriptionLabel.setBounds(30, 300, 600, 30)
+        distanceLabel.setBounds(30, 270, 600, 30)
         pdaNotificationLabel.setBounds(30, 300, 600, 30)
         northButton.setBounds(110, 460, 90, 40)
         eastButton.setBounds(200, 500, 90, 40)
@@ -298,8 +294,7 @@ class MainWindow(val game: Game) {
         westButton.setBounds(20, 500, 90, 40)
         oxygenLevel.setBounds(210, 540, 120, 40)
         anyOxygen.setBounds(300, 330, 180, 40)
-        infoButton.setBounds(360, 550, 70, 40)
-
+        pdaCounterLabel.setBounds(50, 340, 180, 40)
 
         panel.add(titleLabel)
         panel.add(instructionsLabel)
@@ -313,7 +308,7 @@ class MainWindow(val game: Game) {
         panel.add(westButton)
         panel.add(oxygenLevel)
         panel.add(anyOxygen)
-        panel.add(infoButton)
+        panel.add(pdaCounterLabel)
 
     }
 
@@ -327,8 +322,8 @@ class MainWindow(val game: Game) {
         pdaNotificationLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         oxygenLevel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
         anyOxygen.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
-
-        infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        pdaCounterLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 30)
+        pdaCounterLabel.foreground = java.awt.Color(55, 89, 91)
     }
 
     private fun setupWindow() {
@@ -373,17 +368,11 @@ class MainWindow(val game: Game) {
         eastButton.addActionListener { handleEastClick() }
         southButton.addActionListener { handleSouthClick() }
         westButton.addActionListener { handleWestClick() }
-        infoButton.addActionListener { handleInfoClick() }
-        restartButton.addActionListener { handleRestartClick() }
     }
 
     private fun handleRestartClick() {
         game.restartGame()
         updateUI()
-    }
-
-    private fun handleInfoClick() {
-        infoWindow.show()
     }
 
     //This function checks if the player runs out of oxygen and lets the user decide if they want to play again or quit
@@ -441,14 +430,13 @@ class MainWindow(val game: Game) {
         descriptionLabel.text = "Description: ${location.description}"
         distanceLabel.text = "Distance: ${location.distanceToStartPod}m"
         oxygenLevel.text = "Oxygen: ${game.oxygen}"
+        pdaCounterLabel.text = "PDAS: ${game.score}"
 
         //enables the buttons if the game allows it to move that way
         northButton.isEnabled = game.canGoNorth()
         eastButton.isEnabled = game.canGoEast()
         southButton.isEnabled = game.canGoSouth()
         westButton.isEnabled = game.canGoWest()
-
-        infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
     }
 
     fun show() {

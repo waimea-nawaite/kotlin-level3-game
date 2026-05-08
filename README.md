@@ -31,6 +31,4 @@ The project is written in the [Kotlin](https://kotlinlang.org) programming langu
 - Using non-core API, library or framework
 - Using complex data structures (e.g. stacks, queues, trees)
 
-**EDIT LIST ABOVE TO MATCH YOUR PROJECT**
-
 
